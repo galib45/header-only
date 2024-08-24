@@ -3,9 +3,11 @@
 #if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
     #include <windows.h>
     #define ALLOC(size) VirtualAlloc(NULL, (size), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE)
+    #define FREE(ptr) VirtualFree((ptr), 0, MEM_RELEASE)
 #else
     #include <stdlib.h>
     #define ALLOC(size) malloc((size))
+    #define FREE(ptr) free((ptr)) 
 #endif
 
 #define REGION_DEFAULT_CAPACITY 8192
@@ -54,7 +56,7 @@ void arena_free(Arena *a) {
     Region *r = a->begin, *tmp;
     while (r) {
         tmp = r; r = r->next;
-        free(tmp);
+        FREE(tmp);
     }
 }
 #endif // ARENA_H
